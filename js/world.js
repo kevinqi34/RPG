@@ -29,7 +29,6 @@ var WorldScene = new Phaser.Class({
   },
   preload: function()
   {
-    // Load resources
   },
   create: function()
   {
@@ -83,13 +82,15 @@ var WorldScene = new Phaser.Class({
       this.spawns.create(x, y, 20, 20);
     }
     this.physics.add.overlap(this.player, this.spawns, this.onMeetEnemy, false, this);
+    this.sys.events.on('wake', this.wake, this);
   },
   onMeetEnemy: function(player, zone) {
     zone.x = Phaser.Math.RND.between(0, this.physics.world.bounds.width);
     zone.y = Phaser.Math.RND.between(0, this.physics.world.bounds.height);
     this.cameras.main.shake(300);
+    this.input.stopPropagation();
     // start battle
-    // this.scene.switch('BattleScene');
+    this.scene.switch('BattleScene');
   },
   update: function(time, delta)
   {
@@ -117,29 +118,11 @@ var WorldScene = new Phaser.Class({
     } else {
       this.player.anims.stop();
     }
+  },
+  wake: function() {
+    this.cursors.left.reset();
+    this.cursors.right.reset();
+    this.cursors.up.reset();
+    this.cursors.down.reset();
   }
 });
-
-var config = {
-    type: Phaser.AUTO,
-    parent: 'content',
-    width: 480,
-    height: 360,
-    zoom: 2,
-    pixelArt: true,
-    physics: {
-        default: 'arcade',
-        arcade: {
-          gravity: { y: 0 },
-          debug: true
-        }
-    },
-    scene: [
-      BootScene,
-      WorldScene,
-      BattleScene,
-      UIScene
-    ]
-};
-
-var game = new Phaser.Game(config);
